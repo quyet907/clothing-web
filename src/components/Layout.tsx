@@ -1,6 +1,7 @@
 import {
 	Badge,
 	Box,
+	Button,
 	Container,
 	createStyles,
 	IconButton,
@@ -10,10 +11,14 @@ import {
 	withStyles,
 } from "@material-ui/core";
 import { Shop, ShoppingCart } from "@material-ui/icons";
-import React, { PropsWithChildren } from "react";
-import { useSelector } from "react-redux";
+import React, { PropsWithChildren, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, NavLink, useHistory } from "react-router-dom";
-import { RootState } from "../store/store";
+import { config } from "../configs/config";
+import axios from "../controller/axios";
+import { update } from "../store/authentication";
+import { updateCart } from "../store/cartSlice";
+import { AppDispatch, RootState } from "../store/store";
 
 const useStyles = makeStyles((theme) => ({
 	list: {
@@ -54,7 +59,24 @@ const StyledBadge = withStyles((theme: Theme) =>
 export const Layout = (props: PropsWithChildren<Props>) => {
 	const classes = useStyles();
 	const history = useHistory();
-	const count = useSelector((state: RootState) => state.cart.value);
+	const cart = useSelector((state: RootState) => state.cart);
+	const auth = useSelector((state: RootState) => state.authentication);
+
+	const [user, setUser] = useState();
+	const dispatch = useDispatch<AppDispatch>();
+
+	useEffect(() => {
+		if (localStorage.getItem("jwt")) {
+			axios.get(`${config.apiGateway}/cart`).then((res) => {
+				console.log(res.data);
+				dispatch(updateCart(res.data));
+			});
+		}
+	}, []);
+
+	useEffect(() => {
+		console.log(cart);
+	}, [cart]);
 
 	return (
 		<div>
@@ -79,16 +101,32 @@ export const Layout = (props: PropsWithChildren<Props>) => {
 							</Box>
 							<Box flex={3}>
 								<ul className={classes.list}>
-									<li>
-										<Link style={{ fontWeight: 400 }} to="/#">
-											Sign Up
-										</Link>
-									</li>
-									<li>
-										<Link style={{ fontWeight: 400 }} to="/#">
-											Sign In
-										</Link>
-									</li>
+									{auth ? (
+										<li>
+											<Button
+												style={{ fontWeight: 400, color: "#FFF" }}
+												onClick={() => {
+													dispatch(update(false));
+													localStorage.removeItem("jwt");
+												}}
+											>
+												Logout
+											</Button>
+										</li>
+									) : (
+										<>
+											<li>
+												<Link style={{ fontWeight: 400 }} to="/#">
+													Sign Up
+												</Link>
+											</li>
+											<li>
+												<Link style={{ fontWeight: 400 }} to="/login">
+													Sign In
+												</Link>
+											</li>
+										</>
+									)}
 								</ul>
 							</Box>
 						</Box>
@@ -139,7 +177,12 @@ export const Layout = (props: PropsWithChildren<Props>) => {
 							<Box>
 								<Link to="/cart">
 									<IconButton>
-										<StyledBadge badgeContent={count} color="primary">
+										<StyledBadge
+											badgeContent={cart.reduce((acc, cur) => {
+												return (acc += cur.quantity);
+											}, 0)}
+											color="primary"
+										>
 											<Shop />
 										</StyledBadge>
 									</IconButton>
@@ -149,6 +192,14 @@ export const Layout = (props: PropsWithChildren<Props>) => {
 					</Container>
 				</div>
 			</header>
+			<div>
+				<img src="https://2kmenstores.com/wp-content/uploads/2021/02/men-fashion-sale-2020.jpg" alt="banner"/>
+				<img
+					src="https://cdn.shopify.com/s/files/1/2598/6284/files/3rd_Banner_5_1600x.jpg?v=1593522251"
+					width="100%"
+					alt="banner"
+				/>
+			</div>
 			<main style={{ marginTop: 40, marginBottom: 100 }}>{props.children}</main>
 			<footer></footer>
 		</div>

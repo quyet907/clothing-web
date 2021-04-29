@@ -17,15 +17,17 @@ import {
 	LocalShippingOutlined,
 	Shop,
 } from "@material-ui/icons";
-import axios from "axios";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useParams } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory, useParams } from "react-router";
 import { Link, NavLink } from "react-router-dom";
 import NotFound from "../components/NotFound";
+import { config } from "../configs/config";
+import axios from "../controller/axios";
+import { CartItem } from "../models/Cart";
 import { Product } from "../models/Product";
-import { increment } from "../store/cartSlice";
-import { AppDispatch } from "../store/store";
+import { updateCart } from "../store/cartSlice";
+import { AppDispatch, RootState } from "../store/store";
 import { NumberUtils } from "../utils/NumberUtils";
 
 const useStyles = makeStyles((theme) =>
@@ -72,6 +74,8 @@ export default function ProductDetails() {
 	const classes = useStyles();
 	const params = useParams<{ id: string }>();
 	const dispatch = useDispatch<AppDispatch>();
+	const cart: CartItem[] = useSelector((state: RootState) => state.cart);
+	const history = useHistory();
 	const [product, setProduct] = useState<Product>({
 		id: "",
 		description: "",
@@ -84,16 +88,14 @@ export default function ProductDetails() {
 
 	useLayoutEffect(() => {
 		if (!params.id) return;
-		setTimeout(() => {
-			axios
-				.get("http://localhost:3002/product/" + params.id)
-				.then((res) => {
-					setProduct(res.data);
-				})
-				.finally(() => {
-					setLoading(false);
-				});
-		}, 2000);
+		axios
+			.get("http://localhost:3002/product/" + params.id)
+			.then((res) => {
+				setProduct(res.data);
+			})
+			.finally(() => {
+				setLoading(false);
+			});
 	}, []);
 
 	return loading ? (
@@ -161,7 +163,26 @@ export default function ProductDetails() {
 
 							<div>
 								<Button
-									onClick={(e) => dispatch(increment())}
+									onClick={(e) => {
+										const index = cart.findIndex(
+											(item) => item.product_id === params.id
+										);
+										const quantity =
+											index === -1 ? 1 : cart[index].quantity + 1;
+										axios
+											.put(`${config.apiGateway}/cart/update`, {
+												productId: params.id,
+												quantity,
+											})
+											.then((res) => {
+												dispatch(updateCart(res.data));
+											})
+											.catch((err) => {
+												if (err.response.data.status === 401) {
+													history.push("/login");
+												}
+											});
+									}}
 									startIcon={<Shop />}
 									variant="contained"
 									style={{

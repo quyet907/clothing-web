@@ -1,10 +1,7 @@
 import { makeStyles, Container, Typography, TextField, Button, Box } from "@material-ui/core";
 import axios from "axios";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
-import { update } from "../store/authentication";
-import { AppDispatch } from "../store/store";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -30,7 +27,6 @@ export default function Login() {
 	const [user, setUser] = useState({ username: "admin", password: "admin" });
 	const history = useHistory();
 	const [error, setError] = useState("");
-	const dispatch = useDispatch<AppDispatch>();
 
 	return (
 		<Container>
@@ -82,19 +78,18 @@ export default function Login() {
 							color="primary"
 							onClick={() => {
 								axios
-									.post("http://localhost:3002/user/login", {
+									.post("http://localhost:3002/admin/user/login", {
 										username: user.username,
 										password: user.password,
 									})
 									.then((res) => {
 										localStorage.setItem("jwt", `${res.data.token}`);
-										history.push("/");
-										dispatch(update(true));
-										setError("");
+										history.push("/admin");
+										setError("")
 									})
 									.catch((err) => {
 										console.log(err.response);
-										setError(err.response.data.message);
+										setError(err.response.data.message)
 									});
 							}}
 						>

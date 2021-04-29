@@ -7,4 +7,7 @@ export const theme = createMuiTheme({
 			contrastText: "#FFF",
 		},
 	},
+	shape: {
+		borderRadius: 0
+	}
 });

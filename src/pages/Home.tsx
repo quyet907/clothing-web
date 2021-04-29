@@ -3,6 +3,7 @@ import { cleanup } from "@testing-library/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import ProductItem from "../components/ProductItem";
+import { config } from "../configs/config";
 import { Paging } from "../models/Paging";
 import { Product } from "../models/Product";
 
@@ -16,7 +17,7 @@ export default function Home() {
 	});
 
 	useEffect(() => {
-		axios.get("http://localhost:3002/product").then((res) => {
+		axios.get(`${config.apiGateway}/product`).then((res) => {
 			console.log(res);
 			setPagingProduct(res.data as any);
 		});
@@ -24,6 +25,8 @@ export default function Home() {
 
 	return (
 		<Container>
+
+			
 			<div
 				style={{
 					display: "grid",

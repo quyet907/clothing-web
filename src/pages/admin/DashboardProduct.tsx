@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -7,7 +7,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import { Box, Button, IconButton, TablePagination, Typography } from "@material-ui/core";
+import { Box, Button, IconButton, TablePagination, TextField, Typography } from "@material-ui/core";
 import { Paging } from "../../models/Paging";
 import { Product } from "../../models/Product";
 import { NumberUtils } from "../../utils/NumberUtils";
@@ -16,6 +16,7 @@ import { config } from "../../configs/config";
 import axios from "axios";
 import DeletePopUp from "../../components/DeletePopUp";
 import AddProductPopUp from "../../components/AddProductPopUp";
+import _ from "lodash";
 
 const useStyles = makeStyles({
 	table: {
@@ -27,10 +28,10 @@ const useStyles = makeStyles({
 			WebkitLineClamp: 1,
 			WebkitBoxOrient: "vertical",
 			overflow: "hidden",
-			margin: 0
+			margin: 0,
 		},
 		"& > p > img": {
-			display: "none"
+			display: "none",
 		},
 	},
 });
@@ -53,7 +54,7 @@ export default function DashboardProduct() {
 		totalPages: 1,
 	});
 
-	const [query, setQuery] = useState<{ page: number; pageSize: number }>({
+	const [query, setQuery] = useState<{ page: number; pageSize: number; search?: string }>({
 		page: 1,
 		pageSize: 10,
 	});
@@ -61,12 +62,19 @@ export default function DashboardProduct() {
 	useEffect(() => {
 		axios
 			.get(`${config.apiGateway}/product`, {
-				params: { page: query.page, pageSize: query.pageSize },
+				params: { page: query.page, pageSize: query.pageSize, search: query.search },
 			})
 			.then((res) => {
 				setPaging(res.data);
 			});
 	}, [query]);
+
+	const onQueryChanged = useCallback(
+		_.debounce((value: string) => {
+			setQuery({ ...query, search: value });
+		}, 400),
+		[]
+	);
 
 	return (
 		<div>
@@ -74,17 +82,26 @@ export default function DashboardProduct() {
 				<Typography style={{ fontWeight: "bold" }} variant="h5">
 					Product
 				</Typography>
-				<Button
-					variant="contained"
-					color="primary"
-					startIcon={<Add />}
-					onClick={() => {
-						setSelectedProduct({ id: "" } as Product);
-						setAddNewPopUp(true);
-					}}
-				>
-					Add Product
-				</Button>
+				<div style={{ display: "flex", alignItems: "center" }}>
+					<TextField
+						style={{ marginRight: 24 }}
+						label="Search"
+						onChange={(e) => {
+							onQueryChanged(e.target.value as string);
+						}}
+					></TextField>
+					<Button
+						variant="contained"
+						color="primary"
+						startIcon={<Add />}
+						onClick={() => {
+							setSelectedProduct({ id: "" } as Product);
+							setAddNewPopUp(true);
+						}}
+					>
+						Add Product
+					</Button>
+				</div>
 			</div>
 			<TableContainer style={{ marginTop: 8 * 3 }}>
 				<Table className={classes.table} aria-label="simple table">

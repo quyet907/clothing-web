@@ -13,7 +13,7 @@ import {
 import { Shop, ShoppingCart } from "@material-ui/icons";
 import React, { PropsWithChildren, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, NavLink, useHistory } from "react-router-dom";
+import { Link, NavLink, useHistory, useRouteMatch } from "react-router-dom";
 import { config } from "../configs/config";
 import axios from "../controller/axios";
 import { update } from "../store/authentication";
@@ -192,13 +192,55 @@ export const Layout = (props: PropsWithChildren<Props>) => {
 					</Container>
 				</div>
 			</header>
-			<div>
-				<img src="https://2kmenstores.com/wp-content/uploads/2021/02/men-fashion-sale-2020.jpg" alt="banner"/>
+			<div style={{ display: window.location.pathname === "/" ? undefined : "none" }}>
 				<img
-					src="https://cdn.shopify.com/s/files/1/2598/6284/files/3rd_Banner_5_1600x.jpg?v=1593522251"
+					src="https://firebasestorage.googleapis.com/v0/b/fir-app-87c8a.appspot.com/o/3rd_Banner_5_1600x%20(1).jpg?alt=media&token=54606252-9ae0-4e6e-b1f3-ca9929d5f1cd"
+					alt="3rd-Banner-5-1600x-1"
 					width="100%"
-					alt="banner"
 				/>
+				<Container style={{ marginTop: 24 }}>
+					<div style={{ display: "grid", gap: 24 }}>
+						<div
+							style={{
+								gridColumn: "1/3",
+								gridRow: "1/3",
+								height: 500,
+								backgroundImage:
+									"url('https://assets.ajio.com/medias/sys_master/images/images/hd7/hcf/14844211527710/10122019-M-MHP-topbanner-NewArrivals-upto50.jpg",
+								backgroundRepeat: "no-repeat",
+								backgroundSize: "cover",
+								backgroundPositionX: "center",
+							}}
+						></div>
+						<div
+							style={{
+								gridColumn: "3/5",
+								backgroundImage:
+									"url('https://cdn.shopify.com/s/files/1/2265/5245/files/Mens-Fashion-Online-Shopping-in-Pakistan-3.jpg?v=1593221571",
+								backgroundRepeat: "no-repeat",
+								backgroundSize: "cover",
+								backgroundPositionX: "center",
+							}}
+						></div>
+						<div
+							style={{
+								backgroundImage:
+									"url('https://i.pinimg.com/originals/6b/01/ce/6b01cee0eb95524c30f3030d9ea02dbe.jpg",
+								backgroundRepeat: "no-repeat",
+								backgroundSize: "cover",
+								backgroundPositionX: "center",
+							}}
+						></div>
+						<div
+							style={{
+								backgroundImage: "url('http://sitsoftwares.co.in/med/ALIA.jpg')",
+								backgroundRepeat: "no-repeat",
+								backgroundSize: "cover",
+								backgroundPositionX: "center",
+							}}
+						></div>
+					</div>
+				</Container>
 			</div>
 			<main style={{ marginTop: 40, marginBottom: 100 }}>{props.children}</main>
 			<footer></footer>

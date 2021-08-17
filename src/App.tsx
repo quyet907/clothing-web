@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Redirect, Route, Switch, useRouteMatch } from "react-router-dom";
 import "./App.css";
 import { Layout } from "./components/Layout";
 import NotFound from "./components/NotFound";
@@ -23,6 +23,8 @@ function App() {
 	const isPrivateRoute = window.location.href.includes("cart");
 
 	const auth = useSelector((state: RootState) => state.authentication);
+
+	console.log(window.location);
 
 	useEffect(() => {
 		axios

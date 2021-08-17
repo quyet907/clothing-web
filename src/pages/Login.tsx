@@ -94,7 +94,7 @@ export default function Login() {
 									})
 									.catch((err) => {
 										console.log(err.response);
-										setError(err.response.data.message);
+										setError(err.response?.data?.message);
 									});
 							}}
 						>

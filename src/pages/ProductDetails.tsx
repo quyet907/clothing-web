@@ -242,9 +242,13 @@ export default function ProductDetails() {
 					</Box>
 				</Container>
 			</div>
-			<div>
-				<Container>{product.description}</Container>
-			</div>
+			<Box mt={3}>
+				<Container>
+					<Typography
+						dangerouslySetInnerHTML={{ __html: product.description }}
+					></Typography>
+				</Container>
+			</Box>
 		</div>
 	) : (
 		<NotFound />
